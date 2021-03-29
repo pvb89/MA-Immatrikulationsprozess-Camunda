@@ -52,7 +52,7 @@ Server: 4000
 Camunda: 8080
 ```
 
- [frontend]: <www.github.com/pvb89/imma-frontend>
- [backend]: <www.github.com/pvb89/imma-backend>
+ [frontend]: <https://www.github.com/pvb89/imma-frontend>
+ [backend]: <https://www.github.com/pvb89/imma-backend>
  [camundaLogin]: <http://localhost:8080/camunda-welcome/index.html>
  [camundaDownload]: <https://camunda.com/download/>
