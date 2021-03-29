@@ -4,7 +4,11 @@
 
 Digitization of matriculation process of the Technische Hochschule Brandenburg
 
-> This Repository hold the files for the Camunda Engine
+(This repository hold the files for the Camunda Engine)
+
+![](https://i.ibb.co/qdZgG3S/Architektur.jpg)
+
+![](https://i.ibb.co/xfNzQcG/Immatrikulationsprozess.jpg)
  
 ### Links to releated Gits
 
