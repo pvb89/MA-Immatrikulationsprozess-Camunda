@@ -1,0 +1,1 @@
+curl -w "\n" \ -H "Accept: application/json" \ -F "deployment-name=Immatrikulationsprozess" \ -F "enable-duplicate-filtering=false" \ -F "deploy-changed-only=false" \ -F "Immatrikulationsprozess.bpmn=@Immatrikulationsprozess.bpmn" \ -F "Pruefung.html=@Pruefung.html" \ -F "NotendurschnittPruefen.dmn=@NotendurschnittPruefen.dmn" \ http://localhost:8080/engine-rest/deployment/create

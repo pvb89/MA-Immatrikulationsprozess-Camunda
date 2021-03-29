@@ -1,0 +1,152 @@
+<form role="form" name="form">
+	<script cam-script type="text/form-script">
+		var variableManager= camForm.variableManager;
+		camForm.on('form-loaded', function() {
+		  // variables that are not already used in cam-variable bindings
+		  // must be fetched explicitly
+		  camForm.variableManager.fetchVariable('courseId');
+		  camForm.variableManager.fetchVariable('courseEntryId');
+		  camForm.variableManager.fetchVariable('name');
+
+		  camForm.variableManager.fetchVariable('course');
+		  camForm.variableManager.fetchVariable('averageGrade');
+		  camForm.variableManager.fetchVariable('universityQualification');
+
+		  camForm.variableManager.fetchVariable('bday');
+		  camForm.variableManager.fetchVariable('birthcountry');
+		  camForm.variableManager.fetchVariable('nationality');
+
+		  camForm.variableManager.fetchVariable('domicile');
+		  camForm.variableManager.fetchVariable('zipCode');
+		  camForm.variableManager.fetchVariable('street');
+		  camForm.variableManager.fetchVariable('country');
+		});
+	
+		camForm.on('variables-fetched', function() {
+		  // access to all process variables after the form has loaded
+		  // $scope.variables = variableManager.variables;
+
+		  $scope.name = variableManager.variable('name').value;
+		  $scope.courseId = variableManager.variable('courseId').value;
+
+		  $scope.course = variableManager.variable('course').value;
+		  $scope.averageGrade = variableManager.variable('averageGrade').value;
+		  $scope.universityQualification = variableManager.variable('universityQualification').value;
+		  
+		  $scope.bday = variableManager.variable('bday').value;
+		  $scope.birthcountry = variableManager.variable('birthcountry').value;
+		  $scope.nationality = variableManager.variable('nationality').value;
+
+		  $scope.domicile = variableManager.variable('domicile').value;
+		  $scope.zipCode = variableManager.variable('zipCode').value;
+		  $scope.street = variableManager.variable('street').value;
+		  $scope.country = variableManager.variable('country').value;
+
+		});
+	  </script>
+	<h3>Bitte die Unterlagen des Bewerbers überprüfen</h3>
+	<h3>Allgemeine Daten</h3>
+	<table class="table">
+		<thead class="thead-dark">
+			<tr>
+				<th style="width: 30%"><strong>Bezeichnung</strong></th>
+				<th style="width: 70%"><strong>Wert</strong></th>
+			</tr>
+		</thead>
+		<tr>
+			<th>Identifikationsnummer des Immatrikulationsantrags</th>
+			<td>{{courseEntryId}}</td>
+		</tr>
+		<tr>
+			<th>Studiengang</th>
+			<td>{{course}}</td>
+		</tr>
+	</table>
+	<br>
+	<h3>Berechtigung</h3>
+	<table class="table">
+		<thead class="thead-dark">
+			<tr>
+				<th style="width: 30%"><strong>Bezeichnung</strong></th>
+				<th style="width: 70%"><strong>Wert</strong></th>
+			</tr>
+		</thead>
+		<tr>
+			<th>Art der Hochschulberechtigung</th>
+			<td>{{universityQualification}}</td>
+		</tr>
+		<tr>
+			<th>Notendurchschnitt</th>
+			<td>{{averageGrade}}</ttdh>
+		</tr>
+	</table>
+	<div>
+		<h3>PDF Datei - Hochschulabschluss</h3>
+		<object data="{{ camForm.variableManager.variable('hochschulabschluss.pdf').contentUrl }}"
+			type="application/pdf" width="100%" height="auto">
+			<p>
+				Es scheint, dass Sie kein PDF-Plugin für diesen Browser haben. Kein Problem ... du kannst
+				<a cam-file-download="hochschulabschluss.pdf"> hier klicken, um die PDF-Datei herunterzuladen</a>
+			</p>
+		</object>
+	</div>
+	<br>
+	<h3>Persönliche Daten</h3>
+	<table class="table table-striped">
+		<tr>
+			<th style="width: 30%"><strong>Bezeichnung</strong></th>
+			<th style="width: 70%"><strong>Wert</strong></th>
+		</tr>
+		<tr>
+			<th>Vor-/Nachname</th>
+			<td>{{name}}</td>
+		</tr>
+		<tr>
+			<th>Geburtsdatum</th>
+			<td>{{bday}}</td>
+		</tr>
+		<tr>
+			<th>Staatsangehörigkeit</th>
+			<td>{{nationality}}</td>
+		</tr>
+		<tr>
+			<th>Wohndomicile</th>
+			<td>{{domicile}}</td>
+		</tr>
+		<tr>
+			<th>Postleitzahl</th>
+			<td>{{zipCode}}</td>
+		</tr>
+		<tr>
+			<th>Straße</th>
+			<td>{{street}}</td>
+		</tr>
+		<tr>
+			<th>Land</th>
+			<td>{{country}}</td>
+		</tr>
+	</table>
+	<div>
+		<label for="customerId">Gibt es ein Probleme mit dem Hochschulabschluss?</label>
+	</div>
+	<div>
+		<input type="checkbox" id="dokPruefungId" cam-variable-name="dokPruefung" cam-variable-type="Boolean" /> Ja, es
+		gibt ein Problem
+	</div>
+	<br>
+	<div>
+		<label for="customerRevenue">Gibt es sonst ein Problem das eine Manuelle Überprüfung benötigt?</label>
+	</div>
+	<div>
+		<input type="checkbox" cam-variable-name="dokPruefungSonstiges" cam-variable-type="Boolean" /> Ja, es
+		gibt ein weiteres Problem
+	</div>
+	<br>
+	<div>
+		<label for="customerRevenue">Anmerkung für den Studenten bei Problemen:</label>
+	</div>
+	<div>
+		<textarea style="min-width:600px; min-height:75px;" cam-variable-name="dokNotiz"
+			cam-variable-type="String"></textarea>
+	</div>
+</form>

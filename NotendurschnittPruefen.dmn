@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/DMN/20151101/dmn.xsd" xmlns:biodi="http://bpmn.io/schema/dmn/biodi/1.0" id="Decision_nc" name="DRD" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="3.7.0">
+  <decision id="Decision_vorauswahl" name="Vorauswahl des*der Bewerber*in">
+    <extensionElements>
+      <biodi:bounds x="160" y="80" width="180" height="80" />
+      <biodi:edge source="Notendurschnitt">
+        <biodi:waypoints x="260" y="247" />
+        <biodi:waypoints x="260" y="160" />
+      </biodi:edge>
+    </extensionElements>
+    <informationRequirement>
+      <requiredInput href="#Notendurschnitt" />
+    </informationRequirement>
+    <decisionTable id="decisionTable_1">
+      <input id="input_1" label="Studiengang">
+        <inputExpression id="inputExpression_1" typeRef="integer">
+          <text>courseId</text>
+        </inputExpression>
+      </input>
+      <input id="InputClause_0aes1dh" label="Notendurschnitt">
+        <inputExpression id="LiteralExpression_0w9h0m2" typeRef="double">
+          <text>averageGrade</text>
+        </inputExpression>
+      </input>
+      <output id="output_1" label="Voraussetzungen erfüllt?" name="ncPruefung" typeRef="boolean" />
+      <rule id="DecisionRule_0zkze90">
+        <inputEntry id="UnaryTests_1yqwow7">
+          <description>Applied Computer Science</description>
+          <text>1</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_16j4h20">
+          <text>&lt;= 3.0</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_11wdixs">
+          <text>true</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1wvvo9n">
+        <inputEntry id="UnaryTests_1btpf6e">
+          <description>Applied Computer Science</description>
+          <text>1</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1pmeqc5">
+          <text>&gt;= 3.1</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_070nqxk">
+          <text>false</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1ndge07">
+        <inputEntry id="UnaryTests_1oufhi5">
+          <description>Informatik</description>
+          <text>2</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_13jjs7b">
+          <text>&lt;= 2.7</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_09t1uyl">
+          <text>true</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0910xd2">
+        <inputEntry id="UnaryTests_0upn4p0">
+          <description>Informatik</description>
+          <text>2</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_00tj8zs">
+          <text>&gt;= 2.8</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0y1r9ct">
+          <text>false</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_15envi0">
+        <inputEntry id="UnaryTests_10mdd2r">
+          <description>Medizininformatik</description>
+          <text>3</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0g2bbuy">
+          <text>&lt;= 2.0</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0u09gs6">
+          <text>true</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1vto97v">
+        <inputEntry id="UnaryTests_0nmieuf">
+          <description>Medizininformatik</description>
+          <text>3</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0qrffct">
+          <text>&gt;= 2.1</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1ibxm5h">
+          <text>false</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1ck9x7w">
+        <inputEntry id="UnaryTests_03ld5sl">
+          <description>Ingenieurwissenschaften</description>
+          <text>4</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0js39py">
+          <text>&lt;= 2.7</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1cy822r">
+          <text>true</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0ggsa0a">
+        <inputEntry id="UnaryTests_1ngmm07">
+          <description>Ingenieurwissenschaften</description>
+          <text>4</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1i5zqjr">
+          <text>&gt;= 2.8</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0jlmaw3">
+          <text>false</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0twlkvt">
+        <inputEntry id="UnaryTests_0c2ik6q">
+          <description>Wirtschaftsingenieurwesen</description>
+          <text>5</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0bdzxnk">
+          <text>&lt;= 1.7</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0lwsw7e">
+          <text>true</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1cxd75d">
+        <inputEntry id="UnaryTests_0qba67t">
+          <description>Wirtschaftsingenieurwesen</description>
+          <text>5</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_15ed7g7">
+          <text>&gt;= 1.8</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_16y3ig8">
+          <text>false</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1sn9b7n">
+        <inputEntry id="UnaryTests_04mtbt8">
+          <description>Maschinenbau</description>
+          <text>6</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1dbbcac">
+          <text>&lt;= 1.3</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_02ldwi5">
+          <text>true</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_10zzv3o">
+        <inputEntry id="UnaryTests_0q0skrn">
+          <description>Maschinenbau</description>
+          <text>6</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_1qj15pl">
+          <text>&gt;= 1.4</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1fweqjb">
+          <text>false</text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+  <inputData id="Notendurschnitt" name="Notendurchschnitt">
+    <extensionElements>
+      <biodi:bounds x="197" y="247" width="125" height="45" />
+    </extensionElements>
+  </inputData>
+</definitions>

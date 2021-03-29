@@ -1,0 +1,543 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_0bvmenf" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="3.7.0">
+  <bpmn:collaboration id="Collaboration_1obqjpt">
+    <bpmn:participant id="Participant_1d5h26p" name="Sachbearbeiter*in" processRef="Immatrikulations_Prozess" />
+    <bpmn:participant id="Participant_0628yyw" name="Backend" processRef="Process_17f2lfl" />
+    <bpmn:messageFlow id="MessageFlow_1cbcdj8" name="API Request" sourceRef="Activity_Status_NC" targetRef="Participant_0628yyw" />
+    <bpmn:messageFlow id="MessageFlow_1qde444" name="API Request" sourceRef="Participant_0628yyw" targetRef="Activity_17b6gbd" />
+    <bpmn:messageFlow id="MessageFlow_0ayj0hl" name="API Request" sourceRef="Activity_Status_FristUeberschritten" targetRef="Participant_0628yyw" />
+    <bpmn:messageFlow id="MessageFlow_01bvlec" name="API Request" sourceRef="Activity_Status_Immatrikuliert" targetRef="Participant_0628yyw" />
+    <bpmn:messageFlow id="MessageFlow_1u4ypyv" name="API Request" sourceRef="Activity_Status_Zahlungseingang" targetRef="Participant_0628yyw" />
+    <bpmn:messageFlow id="MessageFlow_0yrbixa" name="API Request" sourceRef="Activity_Status_DokumenteFehlerhaft" targetRef="Participant_0628yyw" />
+    <bpmn:messageFlow id="MessageFlow_1dlldx8" name="API Request" sourceRef="Activity_0rvb3eh" targetRef="Participant_0628yyw" />
+    <bpmn:messageFlow id="MessageFlow_12po6kv" name="API Request" sourceRef="Activity_Script_DokumenteLaden" targetRef="Participant_0628yyw" />
+    <bpmn:messageFlow id="MessageFlow_177p722" name="API Request" sourceRef="Participant_0628yyw" targetRef="StartEvent_1" />
+  </bpmn:collaboration>
+  <bpmn:process id="Immatrikulations_Prozess" isExecutable="true" camunda:candidateStarterUsers="demo">
+    <bpmn:sequenceFlow id="Flow_17127se" sourceRef="Activity_Status_NC" targetRef="Event_17g1syb" />
+    <bpmn:sequenceFlow id="Flow_1gqrk67" name="Nein" sourceRef="Gateway_0018fan" targetRef="Activity_Status_NC">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{not ncPruefung}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_117xg3b" name="Ja" sourceRef="Gateway_0018fan" targetRef="Activity_1nvjeop">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{ncPruefung}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_0vftoq9" sourceRef="Activity_DMN_NC" targetRef="Gateway_0018fan" />
+    <bpmn:sequenceFlow id="Flow_0agu6q1" sourceRef="StartEvent_1" targetRef="Activity_DMN_NC" />
+    <bpmn:endEvent id="Event_17g1syb" name="Einschreibung abgelehnt">
+      <bpmn:incoming>Flow_17127se</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:serviceTask id="Activity_Status_NC" name="Status &#34;auf NC nicht erreicht&#34; setzen">
+      <bpmn:extensionElements>
+        <camunda:connector>
+          <camunda:inputOutput>
+            <camunda:inputParameter name="method">POST</camunda:inputParameter>
+            <camunda:inputParameter name="payload">
+              <camunda:script scriptFormat="Javascript">var myJson = {
+    "courseId": execution.getVariable('courseEntryId'),
+    "statusId": 7
+}
+
+var stringJSON = JSON.stringify(myJson);
+
+stringJSON;</camunda:script>
+            </camunda:inputParameter>
+            <camunda:inputParameter name="url">http://localhost:4000/api/course/updateStatus</camunda:inputParameter>
+            <camunda:inputParameter name="headers">
+              <camunda:map>
+                <camunda:entry key="Content-Type">application/json</camunda:entry>
+              </camunda:map>
+            </camunda:inputParameter>
+          </camunda:inputOutput>
+          <camunda:connectorId>http-connector</camunda:connectorId>
+        </camunda:connector>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1gqrk67</bpmn:incoming>
+      <bpmn:outgoing>Flow_17127se</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="Gateway_0018fan" name="NC für Studiengang erreicht?">
+      <bpmn:incoming>Flow_0vftoq9</bpmn:incoming>
+      <bpmn:outgoing>Flow_117xg3b</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1gqrk67</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:businessRuleTask id="Activity_DMN_NC" name="Notendurschnitt prüfen (DMN)" camunda:resultVariable="ncPruefung" camunda:decisionRef="Decision_vorauswahl" camunda:mapDecisionResult="singleEntry">
+      <bpmn:incoming>Flow_0agu6q1</bpmn:incoming>
+      <bpmn:outgoing>Flow_0vftoq9</bpmn:outgoing>
+    </bpmn:businessRuleTask>
+    <bpmn:sequenceFlow id="Flow_1vgf8cp" sourceRef="Activity_1nvjeop" targetRef="Activity_Script_DokumenteLaden" />
+    <bpmn:userTask id="Activity_1nvjeop" name="Antrag annehmen">
+      <bpmn:incoming>Flow_117xg3b</bpmn:incoming>
+      <bpmn:outgoing>Flow_1vgf8cp</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="Event_19xxljk" name="Einschreibung bewilligt">
+      <bpmn:incoming>Flow_08hx1rn</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="Event_1t3o2oo" name="Einschreibung abgelehnt">
+      <bpmn:incoming>Flow_0dmruzn</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:serviceTask id="Activity_Status_FristUeberschritten" name="Status auf &#34;Frist überschritten&#34; setzen">
+      <bpmn:extensionElements>
+        <camunda:connector>
+          <camunda:inputOutput>
+            <camunda:inputParameter name="method">POST</camunda:inputParameter>
+            <camunda:inputParameter name="payload">
+              <camunda:script scriptFormat="Javascript">var myJson = {
+    "courseId": execution.getVariable('courseEntryId'),
+    "statusId": 6
+}
+
+var stringJSON = JSON.stringify(myJson);
+
+stringJSON;</camunda:script>
+            </camunda:inputParameter>
+            <camunda:inputParameter name="url">http://localhost:4000/api/course/updateStatus</camunda:inputParameter>
+            <camunda:inputParameter name="headers">
+              <camunda:map>
+                <camunda:entry key="Content-Type">application/json</camunda:entry>
+              </camunda:map>
+            </camunda:inputParameter>
+          </camunda:inputOutput>
+          <camunda:connectorId>http-connector</camunda:connectorId>
+        </camunda:connector>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0jws2kx</bpmn:incoming>
+      <bpmn:outgoing>Flow_0dmruzn</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:userTask id="Activity_Manuel_Zahlungseingang" name="Zahlungs-eingang erwarten">
+      <bpmn:incoming>Flow_0td30rf</bpmn:incoming>
+      <bpmn:outgoing>Flow_1xdrdrd</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Activity_17b6gbd" name="Auf Upload warten">
+      <bpmn:incoming>Flow_1uwgoj6</bpmn:incoming>
+      <bpmn:outgoing>Flow_0c7ih8n</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Activity_Manuel_DokumentePruefen" name="Hochschul-berechtigung prüfen" camunda:formKey="embedded:deployment:Pruefung.html">
+      <bpmn:incoming>Flow_0yhm8xq</bpmn:incoming>
+      <bpmn:outgoing>Flow_0i3ryip</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:serviceTask id="Activity_Status_Zahlungseingang" name="Status auf &#34;Zahlungs-eingang&#34; setzen">
+      <bpmn:extensionElements>
+        <camunda:connector>
+          <camunda:inputOutput>
+            <camunda:inputParameter name="method">POST</camunda:inputParameter>
+            <camunda:inputParameter name="payload">
+              <camunda:script scriptFormat="Javascript">var myJson = {
+    "courseId": execution.getVariable('courseEntryId'),
+    "statusId": 4
+}
+
+var stringJSON = JSON.stringify(myJson);
+
+stringJSON;</camunda:script>
+            </camunda:inputParameter>
+            <camunda:inputParameter name="url">http://localhost:4000/api/course/updateStatus</camunda:inputParameter>
+            <camunda:inputParameter name="headers">
+              <camunda:map>
+                <camunda:entry key="Content-Type">application/json</camunda:entry>
+              </camunda:map>
+            </camunda:inputParameter>
+          </camunda:inputOutput>
+          <camunda:connectorId>http-connector</camunda:connectorId>
+        </camunda:connector>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0g704ok</bpmn:incoming>
+      <bpmn:outgoing>Flow_0td30rf</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Activity_Status_DokumenteFehlerhaft" name="Status auf &#34;Dokumente fehlerhaft&#34; setzen">
+      <bpmn:extensionElements>
+        <camunda:connector>
+          <camunda:inputOutput>
+            <camunda:inputParameter name="method">POST</camunda:inputParameter>
+            <camunda:inputParameter name="payload">
+              <camunda:script scriptFormat="Javascript">var myJson = {
+    "courseId": execution.getVariable('courseEntryId'),
+    "statusId": 3
+}
+
+var stringJSON = JSON.stringify(myJson);
+
+stringJSON;</camunda:script>
+            </camunda:inputParameter>
+            <camunda:inputParameter name="url">http://localhost:4000/api/course/updateStatus</camunda:inputParameter>
+            <camunda:inputParameter name="headers">
+              <camunda:map>
+                <camunda:entry key="Content-Type">application/json</camunda:entry>
+              </camunda:map>
+            </camunda:inputParameter>
+          </camunda:inputOutput>
+          <camunda:connectorId>http-connector</camunda:connectorId>
+        </camunda:connector>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_14faf5a</bpmn:incoming>
+      <bpmn:outgoing>Flow_1uwgoj6</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="Gateway_0c6sms4" name="Dokumente korrekt und fehlerfrei?">
+      <bpmn:incoming>Flow_0i3ryip</bpmn:incoming>
+      <bpmn:outgoing>Flow_0g704ok</bpmn:outgoing>
+      <bpmn:outgoing>Flow_14faf5a</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:boundaryEvent id="Event_0hc32d2" attachedToRef="Activity_Manuel_Zahlungseingang">
+      <bpmn:outgoing>Flow_0jws2kx</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDefinition_11v27nn">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT1M</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:serviceTask id="Activity_Status_Immatrikuliert" name="Status auf &#34;Immatrikuliert&#34; setzen">
+      <bpmn:extensionElements>
+        <camunda:connector>
+          <camunda:inputOutput>
+            <camunda:inputParameter name="method">POST</camunda:inputParameter>
+            <camunda:inputParameter name="payload">
+              <camunda:script scriptFormat="Javascript">var myJson = {
+    "courseId": execution.getVariable('courseEntryId'),
+    "statusId": 5
+}
+
+var stringJSON = JSON.stringify(myJson);
+
+stringJSON;</camunda:script>
+            </camunda:inputParameter>
+            <camunda:inputParameter name="url">http://localhost:4000/api/course/updateStatus</camunda:inputParameter>
+            <camunda:inputParameter name="headers">
+              <camunda:map>
+                <camunda:entry key="Content-Type">application/json</camunda:entry>
+              </camunda:map>
+            </camunda:inputParameter>
+          </camunda:inputOutput>
+          <camunda:connectorId>http-connector</camunda:connectorId>
+        </camunda:connector>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1xdrdrd</bpmn:incoming>
+      <bpmn:outgoing>Flow_08hx1rn</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_08hx1rn" sourceRef="Activity_Status_Immatrikuliert" targetRef="Event_19xxljk" />
+    <bpmn:sequenceFlow id="Flow_0dmruzn" sourceRef="Activity_Status_FristUeberschritten" targetRef="Event_1t3o2oo" />
+    <bpmn:sequenceFlow id="Flow_0jws2kx" name="Nach 2 Wochen" sourceRef="Event_0hc32d2" targetRef="Activity_Status_FristUeberschritten" />
+    <bpmn:sequenceFlow id="Flow_0td30rf" sourceRef="Activity_Status_Zahlungseingang" targetRef="Activity_Manuel_Zahlungseingang" />
+    <bpmn:sequenceFlow id="Flow_1xdrdrd" sourceRef="Activity_Manuel_Zahlungseingang" targetRef="Activity_Status_Immatrikuliert" />
+    <bpmn:sequenceFlow id="Flow_1uwgoj6" sourceRef="Activity_Status_DokumenteFehlerhaft" targetRef="Activity_17b6gbd" />
+    <bpmn:sequenceFlow id="Flow_0c7ih8n" sourceRef="Activity_17b6gbd" targetRef="Activity_Script_DokumenteLaden" />
+    <bpmn:sequenceFlow id="Flow_0yhm8xq" sourceRef="Activity_0rvb3eh" targetRef="Activity_Manuel_DokumentePruefen" />
+    <bpmn:sequenceFlow id="Flow_0i3ryip" sourceRef="Activity_Manuel_DokumentePruefen" targetRef="Gateway_0c6sms4" />
+    <bpmn:sequenceFlow id="Flow_0g704ok" name="Ja" sourceRef="Gateway_0c6sms4" targetRef="Activity_Status_Zahlungseingang">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{not dokPruefung}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_14faf5a" name="Nein" sourceRef="Gateway_0c6sms4" targetRef="Activity_Status_DokumenteFehlerhaft">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">#{dokPruefung}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_12b2dfb" sourceRef="Activity_Script_DokumenteLaden" targetRef="Activity_0rvb3eh" />
+    <bpmn:scriptTask id="Activity_Script_DokumenteLaden" name="Hochschul-berechtigung laden" scriptFormat="javascript">
+      <bpmn:incoming>Flow_0c7ih8n</bpmn:incoming>
+      <bpmn:incoming>Flow_1vgf8cp</bpmn:incoming>
+      <bpmn:outgoing>Flow_12b2dfb</bpmn:outgoing>
+      <bpmn:script>function downloadFile(fileUrl)
+{
+  with (new JavaImporter(org.jsoup, java.io.BufferedInputStream))
+  {
+    var doc = Jsoup.connect(fileUrl)
+                    .method(Java.type('org.jsoup.Connection.Method').GET)
+                    .timeout(30000)
+                    .ignoreContentType(true)
+                    .execute()
+
+    var bodyStream = doc.bodyStream()
+
+    return bodyStream
+  }
+}
+
+function saveFile(fileStream, fileName, mimeType)
+{
+  var file = Java.type('org.camunda.bpm.engine.variable.Variables')
+                 .fileValue(fileName)
+                 .file(fileStream)
+                 .mimeType(mimeType)
+                 .create()
+
+  execution.setVariable(fileName, file)
+
+}
+
+function downloadAndSaveFile(fileUrl, fileName, mimeType)
+{
+  var file = downloadFile(fileUrl)
+  saveFile(file, fileName, mimeType)
+}
+
+var courseId= execution.getVariable("courseId", courseId);
+var url = 'http://localhost:4000/api/camunda/getDocument/' + courseId;
+
+downloadAndSaveFile(url, 'hochschulabschluss.pdf', 'application/pdf');</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:serviceTask id="Activity_0rvb3eh" name="Status auf &#34;Unterlagen prüfen&#34; setzen">
+      <bpmn:extensionElements>
+        <camunda:connector>
+          <camunda:inputOutput>
+            <camunda:inputParameter name="method">POST</camunda:inputParameter>
+            <camunda:inputParameter name="payload">
+              <camunda:script scriptFormat="Javascript">var myJson = {
+    "courseId": execution.getVariable('courseEntryId'),
+    "statusId": 2
+}
+
+var stringJSON = JSON.stringify(myJson);
+
+stringJSON;</camunda:script>
+            </camunda:inputParameter>
+            <camunda:inputParameter name="url">http://localhost:4000/api/course/updateStatus</camunda:inputParameter>
+            <camunda:inputParameter name="headers">
+              <camunda:map>
+                <camunda:entry key="Content-Type">application/json</camunda:entry>
+              </camunda:map>
+            </camunda:inputParameter>
+          </camunda:inputOutput>
+          <camunda:connectorId>http-connector</camunda:connectorId>
+        </camunda:connector>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_12b2dfb</bpmn:incoming>
+      <bpmn:outgoing>Flow_0yhm8xq</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:startEvent id="StartEvent_1" name="Antrag auf Einschreibung eingegangen">
+      <bpmn:outgoing>Flow_0agu6q1</bpmn:outgoing>
+    </bpmn:startEvent>
+  </bpmn:process>
+  <bpmn:process id="Process_17f2lfl" isExecutable="false" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1obqjpt">
+      <bpmndi:BPMNShape id="Participant_1d5h26p_di" bpmnElement="Participant_1d5h26p" isHorizontal="true">
+        <dc:Bounds x="140" y="187" width="1570" height="503" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Participant_0628yyw_di" bpmnElement="Participant_0628yyw" isHorizontal="true">
+        <dc:Bounds x="137" y="80" width="1570" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0agu6q1_di" bpmnElement="Flow_0agu6q1">
+        <di:waypoint x="239" y="460" />
+        <di:waypoint x="280" y="460" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Gateway_0018fan_di" bpmnElement="Gateway_0018fan" isMarkerVisible="true">
+        <dc:Bounds x="425" y="435" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="419" y="495" width="62" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0vftoq9_di" bpmnElement="Flow_0vftoq9">
+        <di:waypoint x="380" y="460" />
+        <di:waypoint x="425" y="460" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_117xg3b_di" bpmnElement="Flow_117xg3b">
+        <di:waypoint x="475" y="460" />
+        <di:waypoint x="530" y="460" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="479" y="443" width="12" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1gqrk67_di" bpmnElement="Flow_1gqrk67">
+        <di:waypoint x="450" y="435" />
+        <di:waypoint x="450" y="370" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="422" y="421" width="23" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_17g1syb_di" bpmnElement="Event_17g1syb">
+        <dc:Bounds x="542" y="312" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="525" y="355" width="70" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_17127se_di" bpmnElement="Flow_17127se">
+        <di:waypoint x="500" y="330" />
+        <di:waypoint x="542" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Gateway_0c6sms4_di" bpmnElement="Gateway_0c6sms4" isMarkerVisible="true">
+        <dc:Bounds x="1079" y="435" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1076" y="492" width="57" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0i3ryip_di" bpmnElement="Flow_0i3ryip">
+        <di:waypoint x="1041" y="460" />
+        <di:waypoint x="1079" y="460" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0g704ok_di" bpmnElement="Flow_0g704ok">
+        <di:waypoint x="1129" y="460" />
+        <di:waypoint x="1181" y="460" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1133" y="443" width="12" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_14faf5a_di" bpmnElement="Flow_14faf5a">
+        <di:waypoint x="1104" y="435" />
+        <di:waypoint x="1104" y="330" />
+        <di:waypoint x="1141" y="330" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1078" y="421" width="23" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0td30rf_di" bpmnElement="Flow_0td30rf">
+        <di:waypoint x="1281" y="460" />
+        <di:waypoint x="1310" y="460" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_19xxljk_di" bpmnElement="Event_19xxljk">
+        <dc:Bounds x="1632" y="442" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1616" y="485" width="70" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0nkoi21_di" bpmnElement="Event_0hc32d2">
+        <dc:Bounds x="1362" y="482" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0jws2kx_di" bpmnElement="Flow_0jws2kx">
+        <di:waypoint x="1380" y="518" />
+        <di:waypoint x="1380" y="590" />
+        <di:waypoint x="1480" y="590" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1385" y="521" width="79" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Activity_0o4mba2_di" bpmnElement="Activity_Manuel_DokumentePruefen">
+        <dc:Bounds x="941" y="420" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0v57xow_di" bpmnElement="Activity_Manuel_Zahlungseingang">
+        <dc:Bounds x="1310" y="420" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1uwgoj6_di" bpmnElement="Flow_1uwgoj6">
+        <di:waypoint x="1241" y="330" />
+        <di:waypoint x="1310" y="330" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0c7ih8n_di" bpmnElement="Flow_0c7ih8n">
+        <di:waypoint x="1360" y="290" />
+        <di:waypoint x="1360" y="270" />
+        <di:waypoint x="714" y="270" />
+        <di:waypoint x="714" y="420" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MessageFlow_1cbcdj8_di" bpmnElement="MessageFlow_1cbcdj8">
+        <di:waypoint x="450" y="290" />
+        <di:waypoint x="450" y="140" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="459" y="163" width="62" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MessageFlow_1qde444_di" bpmnElement="MessageFlow_1qde444">
+        <di:waypoint x="1380" y="140" />
+        <di:waypoint x="1380" y="290" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1389" y="163" width="62" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MessageFlow_0ayj0hl_di" bpmnElement="MessageFlow_0ayj0hl">
+        <di:waypoint x="1570" y="550" />
+        <di:waypoint x="1570" y="140" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1579" y="163" width="62" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MessageFlow_01bvlec_di" bpmnElement="MessageFlow_01bvlec">
+        <di:waypoint x="1490" y="420" />
+        <di:waypoint x="1490" y="140" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1499" y="163" width="62" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MessageFlow_1u4ypyv_di" bpmnElement="MessageFlow_1u4ypyv">
+        <di:waypoint x="1260" y="420" />
+        <di:waypoint x="1260" y="140" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1268" y="163" width="62" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MessageFlow_0yrbixa_di" bpmnElement="MessageFlow_0yrbixa">
+        <di:waypoint x="1181" y="290" />
+        <di:waypoint x="1181" y="140" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1189" y="163" width="62" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Activity_1yzyyu0_di" bpmnElement="Activity_Status_NC">
+        <dc:Bounds x="400" y="290" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_08hx1rn_di" bpmnElement="Flow_08hx1rn">
+        <di:waypoint x="1550" y="460" />
+        <di:waypoint x="1632" y="460" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_1t3o2oo_di" bpmnElement="Event_1t3o2oo">
+        <dc:Bounds x="1632" y="572" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1615" y="615" width="70" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0dmruzn_di" bpmnElement="Flow_0dmruzn">
+        <di:waypoint x="1580" y="590" />
+        <di:waypoint x="1632" y="590" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Activity_06x2ien_di" bpmnElement="Activity_Status_DokumenteFehlerhaft">
+        <dc:Bounds x="1141" y="290" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1v23v36_di" bpmnElement="Activity_Status_FristUeberschritten">
+        <dc:Bounds x="1480" y="550" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_00kmjn4_di" bpmnElement="Activity_Status_Zahlungseingang">
+        <dc:Bounds x="1181" y="420" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1qiu4uv_di" bpmnElement="Activity_DMN_NC">
+        <dc:Bounds x="280" y="420" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_12b2dfb_di" bpmnElement="Flow_12b2dfb">
+        <di:waypoint x="764" y="460" />
+        <di:waypoint x="801" y="460" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Activity_0xvj8a9_di" bpmnElement="Activity_Script_DokumenteLaden">
+        <dc:Bounds x="664" y="420" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_19v5l18_di" bpmnElement="Activity_17b6gbd">
+        <dc:Bounds x="1310" y="290" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0yhm8xq_di" bpmnElement="Flow_0yhm8xq">
+        <di:waypoint x="901" y="460" />
+        <di:waypoint x="941" y="460" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Activity_1uihnpj_di" bpmnElement="Activity_Status_Immatrikuliert">
+        <dc:Bounds x="1450" y="420" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1xdrdrd_di" bpmnElement="Flow_1xdrdrd">
+        <di:waypoint x="1410" y="460" />
+        <di:waypoint x="1450" y="460" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Activity_1mopk9x_di" bpmnElement="Activity_0rvb3eh">
+        <dc:Bounds x="801" y="420" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1nvjeop_di" bpmnElement="Activity_1nvjeop">
+        <dc:Bounds x="530" y="420" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1vgf8cp_di" bpmnElement="Flow_1vgf8cp">
+        <di:waypoint x="630" y="460" />
+        <di:waypoint x="664" y="460" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MessageFlow_1dlldx8_di" bpmnElement="MessageFlow_1dlldx8">
+        <di:waypoint x="851" y="420" />
+        <di:waypoint x="851" y="140" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="859" y="163" width="62" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MessageFlow_12po6kv_di" bpmnElement="MessageFlow_12po6kv">
+        <di:waypoint x="700" y="420" />
+        <di:waypoint x="700" y="140" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="709" y="163" width="62" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="MessageFlow_177p722_di" bpmnElement="MessageFlow_177p722">
+        <di:waypoint x="221" y="140" />
+        <di:waypoint x="221" y="442" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="229" y="163" width="62" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_1hljf72_di" bpmnElement="StartEvent_1">
+        <dc:Bounds x="203" y="442" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="186" y="485" width="70" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
