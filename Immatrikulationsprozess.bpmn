@@ -41,7 +41,7 @@ var stringJSON = JSON.stringify(myJson);
 
 stringJSON;</camunda:script>
             </camunda:inputParameter>
-            <camunda:inputParameter name="url">http://localhost:4000/api/course/updateStatus</camunda:inputParameter>
+            <camunda:inputParameter name="url">https://pvb-backend.azurewebsites.net/api/course/updateStatus</camunda:inputParameter>
             <camunda:inputParameter name="headers">
               <camunda:map>
                 <camunda:entry key="Content-Type">application/json</camunda:entry>
@@ -89,7 +89,7 @@ var stringJSON = JSON.stringify(myJson);
 
 stringJSON;</camunda:script>
             </camunda:inputParameter>
-            <camunda:inputParameter name="url">http://localhost:4000/api/course/updateStatus</camunda:inputParameter>
+            <camunda:inputParameter name="url">https://pvb-backend.azurewebsites.net/api/course/updateStatus</camunda:inputParameter>
             <camunda:inputParameter name="headers">
               <camunda:map>
                 <camunda:entry key="Content-Type">application/json</camunda:entry>
@@ -129,7 +129,7 @@ var stringJSON = JSON.stringify(myJson);
 
 stringJSON;</camunda:script>
             </camunda:inputParameter>
-            <camunda:inputParameter name="url">http://localhost:4000/api/course/updateStatus</camunda:inputParameter>
+            <camunda:inputParameter name="url">https://pvb-backend.azurewebsites.net/api/course/updateStatus</camunda:inputParameter>
             <camunda:inputParameter name="headers">
               <camunda:map>
                 <camunda:entry key="Content-Type">application/json</camunda:entry>
@@ -157,7 +157,7 @@ var stringJSON = JSON.stringify(myJson);
 
 stringJSON;</camunda:script>
             </camunda:inputParameter>
-            <camunda:inputParameter name="url">http://localhost:4000/api/course/updateStatus</camunda:inputParameter>
+            <camunda:inputParameter name="url">https://pvb-backend.azurewebsites.net/api/course/updateStatus</camunda:inputParameter>
             <camunda:inputParameter name="headers">
               <camunda:map>
                 <camunda:entry key="Content-Type">application/json</camunda:entry>
@@ -196,7 +196,7 @@ var stringJSON = JSON.stringify(myJson);
 
 stringJSON;</camunda:script>
             </camunda:inputParameter>
-            <camunda:inputParameter name="url">http://localhost:4000/api/course/updateStatus</camunda:inputParameter>
+            <camunda:inputParameter name="url">https://pvb-backend.azurewebsites.net/api/course/updateStatus</camunda:inputParameter>
             <camunda:inputParameter name="headers">
               <camunda:map>
                 <camunda:entry key="Content-Type">application/json</camunda:entry>
@@ -264,7 +264,7 @@ function downloadAndSaveFile(fileUrl, fileName, mimeType)
 }
 
 var courseId= execution.getVariable("courseId", courseId);
-var url = 'http://localhost:4000/api/camunda/getDocument/' + courseId;
+var url = 'https://pvb-backend.azurewebsites.net/api/camunda/getDocument/' + courseId;
 
 downloadAndSaveFile(url, 'hochschulabschluss.pdf', 'application/pdf');</bpmn:script>
     </bpmn:scriptTask>
@@ -283,7 +283,7 @@ var stringJSON = JSON.stringify(myJson);
 
 stringJSON;</camunda:script>
             </camunda:inputParameter>
-            <camunda:inputParameter name="url">http://localhost:4000/api/course/updateStatus</camunda:inputParameter>
+            <camunda:inputParameter name="url">https://pvb-backend.azurewebsites.net/api/course/updateStatus</camunda:inputParameter>
             <camunda:inputParameter name="headers">
               <camunda:map>
                 <camunda:entry key="Content-Type">application/json</camunda:entry>
