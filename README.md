@@ -2,7 +2,7 @@
 
 ## General
 
-Digitization of matriculation process of the Technische Hochschule Brandenburg
+Digitalisation of the matriculation process at Technische Hochschule Brandenburg
 
 (This repository hold the files for the Camunda Engine)
 
